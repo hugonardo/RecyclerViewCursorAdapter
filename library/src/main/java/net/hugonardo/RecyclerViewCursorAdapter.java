@@ -86,18 +86,16 @@ public abstract class RecyclerViewCursorAdapter<VH extends android.support.v7.wi
      * This method will move the Cursor to the correct position and call
      * {@link #onBindViewHolderCursor(android.support.v7.widget.RecyclerView.ViewHolder, Cursor)} .
      *
-     * @param holder {@inheritDoc}
-     * @param i      {@inheritDoc}
+     * @param holder   {@inheritDoc}
+     * @param position {@inheritDoc}
      */
     @Override
-    public void onBindViewHolder(VH holder, int i) {
-        if (!mDataValid) {
-            throw new IllegalStateException("this should only be called when the cursor is valid");
+    public void onBindViewHolder(VH holder, int position) {
+        if (mCursor != null && mCursor.moveToPosition(position)) {
+            onBindViewHolderCursor(holder, mCursor);
+        } else {
+            onBindPositionOutOfCursor(holder, position);
         }
-        if (!mCursor.moveToPosition(i)) {
-            throw new IllegalStateException("couldn't move cursor to position " + i);
-        }
-        onBindViewHolderCursor(holder, mCursor);
     }
 
     /**
@@ -105,11 +103,23 @@ public abstract class RecyclerViewCursorAdapter<VH extends android.support.v7.wi
      * {@link android.widget.CursorAdapter#bindView(android.view.View, android.content.Context, Cursor)}
      * , {@link #onBindViewHolder(android.support.v7.widget.RecyclerView.ViewHolder, int)}
      *
-     * @param holder View holder.
+     * @param holder The ViewHolder which should be updated to represent the contents of the
+     *               item at the given position in the data set.
      * @param cursor The cursor from which to get the data. The cursor is already
      *               moved to the correct position.
      */
-    public abstract void onBindViewHolderCursor(VH holder, Cursor cursor);
+    protected abstract void onBindViewHolderCursor(VH holder, Cursor cursor);
+
+    /**
+     * Called when a position out of the Cursor is reached.
+     *
+     * This can be useful if you need to put extra positions at the dataset of the Adapter.
+     *
+     * @param holder   The ViewHolder which should be updated to represent the contents of the
+     *                 item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
+    protected void onBindPositionOutOfCursor(VH holder, int position) {}
 
     @Override
     public int getItemCount() {
