@@ -139,10 +139,10 @@ public abstract class RecyclerViewCursorAdapter<VH extends android.support.v7.wi
             if (mCursor.moveToPosition(position)) {
                 return mCursor.getLong(mRowIDColumn);
             } else {
-                return 0;
+                return RecyclerView.NO_ID;
             }
         } else {
-            return 0;
+            return RecyclerView.NO_ID;
         }
     }
 
